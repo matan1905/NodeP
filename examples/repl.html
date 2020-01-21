@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<style>
+        body{
+            background: #3f3f3f;
+        }
+        #eval {
+            font-size: 32px;
+            border: 0;
+            color: white;
+ background: grey;
+ border-radius: 5px;
+        }
+
+        h1 {
+            color: white
+        }
+        .repl{
+            width: 100%;
+            text-align: center;
+        }
+        #terminal{
+            width: 100%;
+            height: 25px;
+            font-size: 23px;
+            background: #4f4f4f;
+            border: 0;
+            color:white;
+        }
+        li{
+            color: white;
+            text-align: left
+        }
+        .output{
+            background: #4f4f4f;
+            height: 30%;
+        }
+</style>
+<body onload="loaded()">
+
+    <script src="../script.js">
+        //start(document.getElementById('app'))
+	</script>
+    <script>
+        function loaded(){//event instead of this, better interface.
+        n =new Nodep(document.getElementById('Nodep'));
+		}
+
+	</script>
+    <div class="repl">
+    <h1>REPL</h1>
+    <div class="output">
+    <ul id="list">
+    </ul></div>
+    <form width="100%" onsubmit="return false">
+        <input id="terminal" type="text" />
+        <br>
+        <br>
+        <input type=submit id="eval">
+    </form>
+</div>
+    <begin hidden id="Nodep">
+        <define-node>
+            <name>on-todo-add</name>
+            <begin>
+                <set-variable>
+                    <name>item</name>
+                    <create-node>li</create-node>
+                </set-variable>
+                <set-node-inner-to-text>
+                    <get-variable>item</get-variable>
+                     <name>
+                        <evaluate-node>
+                            <first-node-from-string>
+                    <get-value>
+                       <get-element-by-id>terminal</get-element-by-id>
+                    </get-value></first-node-from-string>
+                    </evaluate-node>
+                </name>
+                </set-node-inner-to-text>
+                <set-value>
+                    <get-element-by-id>terminal</get-element-by-id>
+                    <name></name>
+                </set-value>
+                <append-childs>
+                    <get-element-by-id>list</get-element-by-id>
+                    <get-variable>item</get-variable>
+                </append-childs>
+            </begin>
+        </define-node>
+        <add-event-listener>
+            <get-element-by-id>eval</get-element-by-id>
+            <name>click</name>
+            <on-todo-add></on-todo-add>
+        </add-event-listener>
+        
+    </begin>
+</body>
+
+</html>

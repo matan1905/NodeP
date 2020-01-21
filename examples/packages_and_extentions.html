@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<body onload="loaded()">
+    <script src="../script.js">
+    //start(document.getElementById('app'))
+    </script>
+    <script>
+    function loaded() { //event instead of this, better interface.
+        new Nodep(document.getElementById('Nodep'));
+    }
+    </script>
+    <h1>Packages and extentions</h1>
+    <div id="container"></div>
+    <begin hidden id="Nodep">
+      <import-package>example-package</import-package>
+      <import-extention>example-extention</import-extention>
+
+      <extention-print></extention-print>
+      <package-print>dsa</package-print>
+    </begin>
+</body>
+
+</html>

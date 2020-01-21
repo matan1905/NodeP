@@ -1,0 +1,8 @@
+<begin>
+        <define-node>
+            <name>package-print</name>
+            <begin>
+                <print>printing from example package!</print>
+            </begin>
+        </define-node>
+</begin>

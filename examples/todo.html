@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<body onload="loaded()">
+    <script src="../script.js">
+        //start(document.getElementById('app'))
+	</script>
+    <script>
+        function loaded(){//event instead of this, better interface.
+        new Nodep(document.getElementById('Nodep'));
+		}
+
+	</script>
+    <h1>Todo app</h1>
+    <ul id="list">
+    </ul>
+    <input id="todo" type="text" />
+    <button id="add">Add</button>
+    <begin hidden id="Nodep">
+        <define-node>
+            <name>on-todo-add</name>
+            <begin>
+                <set-variable>
+                    <name>item</name>
+                    <create-node click-to="remove-node">li</create-node>
+                </set-variable>
+                <set-node-inner-to-text>
+                    <get-variable>item</get-variable>
+                    <get-value>
+                        <get-element-by-id>todo</get-element-by-id>
+                    </get-value>
+                </set-node-inner-to-text>
+                <set-value>
+                    <get-element-by-id>todo</get-element-by-id>
+                    <name></name>
+                </set-value>
+                <append-childs>
+                    <get-element-by-id>list</get-element-by-id>
+                    <get-variable>item</get-variable>
+                </append-childs>
+            </begin>
+        </define-node>
+        <add-event-listener>
+            <get-element-by-id>add</get-element-by-id>
+            <name>click</name>
+            <on-todo-add></on-todo-add>
+        </add-event-listener>
+        
+        <define-attribute >
+            <name>click-to</name>
+            <begin>
+                <set-variable>
+                    <name>element</name>
+                    <offset-scope>2</offset-scope>
+                </set-variable>
+                <set-variable>
+                    <name>event</name>
+                    <offset-scope>2</offset-scope>
+                </set-variable>
+                <unwind-scope>
+                    <number>3</number>
+                    <define-local-variable>
+                        <name>modified element</name>
+                    </define-local-variable>
+                </unwind-scope>
+                <set-variable>
+                    <name>custom event action</name>
+                    <create-node>
+                        <get-attribute>
+                            <get-variable>element</get-variable>
+                            <name>click-to</name>
+                        </get-attribute>
+                    </create-node>
+                </set-variable>
+                <remove-attribute>
+                    <get-variable>element</get-variable>
+                    <name>click-to</name>
+                </remove-attribute>
+                <set-variable>
+                    <name>modified element</name>
+                    <evaluate-node>
+                        <get-variable>element</get-variable>
+                    </evaluate-node>
+                </set-variable>
+                <append-childs>
+                    <get-variable>custom event action</get-variable>
+                    <identity>
+                        <get-reference>
+                            <get-event>
+                                <get-variable>event</get-variable>
+                            </get-event>
+                            <name>target</name>
+                        </get-reference>
+                        <identity>
+                </append-childs>
+                <set-variable>
+                    <name>action</name>
+                    <first-node-from-string>
+                        <string>
+                            <begin>
+                                <set-variable>
+                                    <name>element</name>
+                                    <offset-scope>1</offset-scope>
+                                </set-variable>
+                                <set-variable>
+                                    <name>event</name>
+                                    <get-attribute>
+                                        <get-variable>element</get-variable>
+                                        <name>event-id</name>
+                                    </get-attribute>
+                                </set-variable>
+                            </begin>
+                        </string>
+                    </first-node-from-string>
+                </set-variable>
+                <append-childs>
+                    <get-variable>action</get-variable>
+                    <get-variable>custom event action</get-variable>
+                </append-childs>
+                <set-variable>
+                    <name>event adder</name>
+                    <first-node-from-string>
+                        <string>
+                            <add-event-listener>
+                                <get-variable>modified element</get-variable>
+                                <name>click</name>
+                            </add-event-listener>
+                        </string>
+                    </first-node-from-string>
+                </set-variable>
+                <append-childs>
+                    <get-variable>event adder</get-variable>
+                    <get-variable>action</get-variable>
+                </append-childs>
+                <evaluate-node>
+                    <get-variable>event adder</get-variable>
+                </evaluate-node>
+                <set-node-to-text>
+                    <get-variable>element</get-variable>
+                    <string>
+                        <get-variable>modified element</get-variable>
+                    </string>
+                </set-node-to-text>
+            </begin>
+        </define-attribute>
+    </begin>
+</body>
+
+</html>
