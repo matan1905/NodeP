@@ -3,20 +3,25 @@
 
 <body onload="loaded()">
     <script src="../script.js">
-        //start(document.getElementById('app'))
-	</script>
+    </script>
     <script>
-        function loaded(){//event instead of this, better interface.
+        function loaded(){
         new Nodep(document.getElementById('Nodep'));
-		}
+        }
 
-	</script>
+    </script>
     <h1>Todo app</h1>
     <ul id="list">
     </ul>
     <input id="todo" type="text" />
     <button id="add">Add</button>
     <begin hidden id="Nodep">
+        <add-event-listener>
+            <get-element-by-id>add</get-element-by-id>
+            <name>click</name>
+            <on-todo-add></on-todo-add>
+        </add-event-listener>
+
         <define-node>
             <name>on-todo-add</name>
             <begin>
@@ -34,19 +39,13 @@
                     <get-element-by-id>todo</get-element-by-id>
                     <name></name>
                 </set-value>
-                <append-childs>
+                <append-children>
                     <get-element-by-id>list</get-element-by-id>
                     <get-variable>item</get-variable>
-                </append-childs>
+                </append-children>
             </begin>
         </define-node>
-        <add-event-listener>
-            <get-element-by-id>add</get-element-by-id>
-            <name>click</name>
-            <on-todo-add></on-todo-add>
-        </add-event-listener>
-        
-        <define-attribute >
+        <define-attribute>
             <name>click-to</name>
             <begin>
                 <set-variable>
@@ -59,9 +58,9 @@
                 </set-variable>
                 <unwind-scope>
                     <number>3</number>
-                    <define-local-variable>
+                    <define-variable>
                         <name>modified element</name>
-                    </define-local-variable>
+                    </define-variable>
                 </unwind-scope>
                 <set-variable>
                     <name>custom event action</name>
@@ -82,7 +81,7 @@
                         <get-variable>element</get-variable>
                     </evaluate-node>
                 </set-variable>
-                <append-childs>
+                <append-children>
                     <get-variable>custom event action</get-variable>
                     <identity>
                         <get-reference>
@@ -91,8 +90,8 @@
                             </get-event>
                             <name>target</name>
                         </get-reference>
-                        <identity>
-                </append-childs>
+                    </identity>
+                </append-children>
                 <set-variable>
                     <name>action</name>
                     <first-node-from-string>
@@ -113,10 +112,10 @@
                         </string>
                     </first-node-from-string>
                 </set-variable>
-                <append-childs>
+                <append-children>
                     <get-variable>action</get-variable>
                     <get-variable>custom event action</get-variable>
-                </append-childs>
+                </append-children>
                 <set-variable>
                     <name>event adder</name>
                     <first-node-from-string>
@@ -128,10 +127,10 @@
                         </string>
                     </first-node-from-string>
                 </set-variable>
-                <append-childs>
+                <append-children>
                     <get-variable>event adder</get-variable>
                     <get-variable>action</get-variable>
-                </append-childs>
+                </append-children>
                 <evaluate-node>
                     <get-variable>event adder</get-variable>
                 </evaluate-node>
@@ -143,6 +142,7 @@
                 </set-node-to-text>
             </begin>
         </define-attribute>
+        
     </begin>
 </body>
 

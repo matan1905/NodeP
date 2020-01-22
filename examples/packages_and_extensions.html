@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<body onload="loaded()">
+    <script src="../script.js">
+    </script>
+    <script>
+    function loaded() { 
+        new Nodep(document.getElementById('Nodep'));
+    }
+    </script>
+    <h1>Packages and extensions</h1>
+    <begin hidden id="Nodep">
+      <import-package>packages/example-package.npp</import-package>
+      <import-extension>extensions/example-extension.js</import-extension>
+
+      <extension-print></extension-print>
+      <package-print></package-print>
+    </begin>
+</body>
+
+</html>

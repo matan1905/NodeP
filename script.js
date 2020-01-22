@@ -1,9 +1,8 @@
 function Nodep(head) {
     //tables
-    var variables_table = {};
     var nodes_table = {};
     var attributes_table = {};
-    //offset list
+    //globals
     var node_scope = {};
     var debug = false;
     var events_store = {};
@@ -11,7 +10,7 @@ function Nodep(head) {
     var actual_node_scope = node_scope
     var nodp = this;
     var imported_packages=[];
-    var imported_extentions=[];
+    var imported_extensions=[];
 
     var push_scope = function(element) {
         var offset_object = {
@@ -134,7 +133,6 @@ function Nodep(head) {
 
 
     nodp.error = function(message) {
-        var max_stack_trace = 10
         console.error(message);
         console.error(node_scope)
     }
@@ -159,7 +157,7 @@ function Nodep(head) {
         return element.children[child];
     }
 
-    nodp.make_string_from_childrens = function(element) {
+    nodp.make_string_from_children = function(element) {
         var str = "";
         var temp_result
         for (var i = 0; i < element.childNodes.length; i++) {
@@ -184,7 +182,7 @@ function Nodep(head) {
         }
     }
 
-    nodp.evaluate_all_childrens = function(element, starting_index = 0) {
+    nodp.evaluate_all_children = function(element, starting_index = 0) {
         var last_evaluation = element;
         for (var i = starting_index; i < element.children.length; i++) {
             last_evaluation = nodp.get_evaluated_argument(element, i);
@@ -221,7 +219,7 @@ function Nodep(head) {
         var base_functions = {
             'print': function(element) {
                 if (element.children.length != 1) {
-                    var str = nodp.make_string_from_childrens(element);
+                    var str = nodp.make_string_from_children(element);
                     console.log(str);
                     return str
                 } else {
@@ -230,13 +228,13 @@ function Nodep(head) {
                 }
             },
             'begin': function(element) {
-                return nodp.evaluate_all_childrens(element);
+                return nodp.evaluate_all_children(element);
             },
             '#TEXT': function(element) {
                 return element.textContent
             },
             'name': function(element) {
-                return nodp.make_string_from_childrens(element).trim();
+                return nodp.make_string_from_children(element).trim();
             },
             '#comment': function(element) {},
             'define-node': function(element) {
@@ -249,15 +247,14 @@ function Nodep(head) {
                 nodp.define_attribute(definition_name, nodp.get_unevaluated_argument(element, 1));
                 return definition_name;
             },
-            'define-local-variable': function(element) {
-
-                node_scope.previous.scope_variables[nodp.make_string_from_childrens(element)] = null;
-            },
             'define-variable': function(element) {
-                node_scope.previous.scope_variables[nodp.get_evaluated_argument(element, 0)] = nodp.get_evaluated_argument(element, 1);
+            	if(element.children.length>1)
+                	return node_scope.previous.scope_variables[nodp.get_evaluated_argument(element, 0)] = nodp.get_evaluated_argument(element, 1);
+                else return node_scope.previous.scope_variables[nodp.make_string_from_children(element)] = null;
+
             },
             'generate-unique-name': function(element) {
-                prefix = nodp.get_evaluated_argument(element, 0);
+                prefix = nodp.make_string_from_children(element);
                 prefix = prefix ? prefix : '_';
                 return prefix + Math.random().toString(36).substr(2, 9);
             },
@@ -265,33 +262,33 @@ function Nodep(head) {
                 return nodp.set_variable(nodp.get_evaluated_argument(element, 0), nodp.get_evaluated_argument(element, 1));
             },
             'get-variable': function(element) {
-                return nodp.get_variable(nodp.make_string_from_childrens(element));
+                return nodp.get_variable(nodp.make_string_from_children(element));
             },
-            'nodp.make_string_from_childrens': function(element) {
-                return nodp.make_string_from_childrens(nodp.get_evaluated_argument(element, 0));
+            'make-string-from-children': function(element) {
+                return nodp.make_string_from_children(nodp.get_evaluated_argument(element, 0));
             },
             'is-variable-set': function(element) {
-                return nodp.is_variable_set(nodp.make_string_from_childrens(element));
+                return nodp.is_variable_set(nodp.make_string_from_children(element));
             },
             'evaluate-node': function(element) {
                 return nodp.apply_evaluation(nodp.get_evaluated_argument(element, 0));
             }, //Using create element and add children you can evaluate on the fly
             'create-node': function(element) {
-                var node = nodp.make_string_from_childrens(element);
+                var node = nodp.make_string_from_children(element);
                 //if(safe_mode && node.toLowerCase() == 'script') throw "Blocked attempt to create script element. turn safe mode off"
                 return document.createElement(node);
             },
             'insert-adjacent-element': function(element) {
                 return nodp.get_evaluated_argument(element, 0).insertAdjacentElement(nodp.get_evaluated_argument(element, 1), nodp.get_evaluated_argument(element, 2));
             },
-            'prepend-childs': function(element) {
+            'prepend-children': function(element) {
                 var parent = nodp.get_evaluated_argument(element, 0);
                 for (var i = 1; i < element.children.length; i++) {
                     parent.prepend(nodp.get_evaluated_argument(element, i));
                 }
                 return parent
             },
-            'append-childs': function(element) {
+            'append-children': function(element) {
                 var parent = nodp.get_evaluated_argument(element, 0);
                 for (var i = 1; i < element.children.length; i++) {
                     parent.appendChild(nodp.get_evaluated_argument(element, i));
@@ -311,7 +308,7 @@ function Nodep(head) {
                 return nodp.get_evaluated_argument(element, 0).children;
             },
             'offset-scope': function(element) {
-                var offset = Number(nodp.make_string_from_childrens(element)) + 1;
+                var offset = Number(nodp.make_string_from_children(element)) + 1;
                 var temporary_offset = node_scope;
                 for (var i = 0; i < offset; i++) {
                     if (temporary_offset['previous'] && temporary_offset['previous']['element']) {
@@ -330,7 +327,7 @@ function Nodep(head) {
                 }
                 actual_node_scope = node_scope;
                 node_scope = temporary_offset
-                var last = nodp.evaluate_all_childrens(element, 1);
+                var last = nodp.evaluate_all_children(element, 1);
                 node_scope = actual_node_scope;
                 return last;
             },
@@ -339,18 +336,18 @@ function Nodep(head) {
 
                 var unwinded_node_scope = node_scope;
                 node_scope = actual_node_scope
-                var last = nodp.evaluate_all_childrens(element);
+                var last = nodp.evaluate_all_children(element);
                 node_scope = unwinded_node_scope;
                 return last;
             },
-            'nodp.error': function(element) {
-                throw nodp.make_string_from_childrens(element);
+            'error': function(element) {
+                throw nodp.make_string_from_children(element);
             },
             'get-node-definition': function(element) {
-                return nodes_table(nodp.make_string_from_childrens(element))
+                return nodes_table(nodp.make_string_from_children(element))
             },
             'get-attribute-definition': function(element) {
-                return attributes_table[nodp.make_string_from_childrens(element)];
+                return attributes_table[nodp.make_string_from_children(element)];
             },
             'identity': function(element) {
                 return nodp.get_unevaluated_argument(element, 0);
@@ -382,14 +379,13 @@ function Nodep(head) {
                 return nodp.get_evaluated_argument(element, 0).outerHTML = nodp.get_evaluated_argument(element, 1);
             },
             'get-first-child': function(element) {
-                var results = get_childs(element);
+                var results = get_children(element);
                 return results.length > 0 ? results[0] : null;
             },
             'get-nth-child': function(element) {
                 var results = nodp.get_evaluated_argument(element, 0).children;
                 var nth = nodp.get_evaluated_argument(element, 1);
                 if (results.length > (nth - 1)) return results[nth];
-                throw "Index out of bound got " + nth + " minimum is 0 maximum is " + results.length;
             },
             'remove-attribute': function(element) {
                 return nodp.get_evaluated_argument(element, 0).removeAttribute(nodp.get_evaluated_argument(element, 1))
@@ -423,7 +419,7 @@ function Nodep(head) {
                 return null;
             },
             'number': function(element) {
-                return Number(nodp.make_string_from_childrens(element));
+                return Number(nodp.make_string_from_children(element));
             },
             'add': function(element) {
                 var result = 0;
@@ -483,17 +479,17 @@ function Nodep(head) {
                 return nodp.get_evaluated_argument(element, 0) <= nodp.get_evaluated_argument(element, 1)
             },
             'boolean': function(element) {
-                return stringToBoolean(nodp.make_string_from_childrens(element));
+                return stringToBoolean(nodp.make_string_from_children(element));
             },
             'string': function(element) {
                 if (element.innerHTML) return element.innerHTML;
                 return element.toString();
             },
             'first-node-from-string': function(element) {
-                return htmlToElement(nodp.make_string_from_childrens(element));
+                return htmlToElement(nodp.make_string_from_children(element));
             },
             'object-from-json': function(element) {
-                return JSON.parse(nodp.make_string_from_childrens(element));
+                return JSON.parse(nodp.make_string_from_children(element));
             },
             'length': function(element) {
                 var evaled = nodp.get_evaluated_argument(element, 0);
@@ -501,13 +497,10 @@ function Nodep(head) {
                 return -1;
             },
             'get-element-by-id': function(element) {
-                return document.getElementById(nodp.make_string_from_childrens(element))
+                return document.getElementById(nodp.make_string_from_children(element))
             },
             'get-elements-by-selector': function(element) {
-                return document.querySelectorAll(nodp.make_string_from_childrens(element))
-            },
-            'get-elements-by-node-name': function(element) {
-                return document.getElementsByTagName(nodp.make_string_from_childrens(element))
+                return document.querySelectorAll(nodp.make_string_from_children(element))
             },
             'sleep': async function(element) {
                 await new Promise(r => setTimeout(r, nodp.get_evaluated_argument(element, 0)));
@@ -521,16 +514,16 @@ function Nodep(head) {
             },
             'make-array': function(element) {
                 var arr = [];
-                if (element.children.length > 0) { nodp.set_variable(nodp.make_string_from_childrens(element), arr); }
+                if (element.children.length > 0) { nodp.set_variable(nodp.make_string_from_children(element), arr); }
                 return arr;
             },
             'make-dictionary': function(element) {
                 var dict = {};
-                if (element.children.length > 0) { nodp.set_variable(nodp.make_string_from_childrens(element), dict); }
+                if (element.children.length > 0) { nodp.set_variable(nodp.make_string_from_children(element), dict); }
                 return dict;
             },
             'import-package': async function(element) {
-                var package = "packages/" + nodp.make_string_from_childrens(element) + ".npp"
+                var package = nodp.make_string_from_children(element)
                 if(imported_packages.includes(package))return;
                 imported_packages.push(package);
                                             
@@ -543,16 +536,16 @@ function Nodep(head) {
 
 
             },
-            'import-extention': async function(element) {
-                var extention = "extentions/" + nodp.make_string_from_childrens(element) + ".js";
-                if(imported_extentions.includes(extention))return;
-                imported_extentions.push(extention);
-                let response = await fetch(extention);
+            'import-extension': async function(element) {
+                var extension =  nodp.make_string_from_children(element);
+                if(imported_extensions.includes(extension))return;
+                imported_extensions.push(extension);
+                let response = await fetch(extension);
                 let status_code = await response.status
                 response = await response.text()
                 if(status_code ==200)
                 	(new Function("nodp", response))(nodp);
-                else throw "got code "+status_code+" while trying to import "+extention;
+                else throw "got code "+status_code+" while trying to import "+extension;
 
             },
             'push-to-array': function(element) {
@@ -562,13 +555,13 @@ function Nodep(head) {
                 return nodp.get_evaluated_argument(element, 0).pop()
             },
             'string-trim': function(element) {
-                return nodp.make_string_from_childrens(element).trim();
+                return nodp.make_string_from_children(element).trim();
             },
             'to-upper-case': function(element) {
-                return nodp.make_string_from_childrens(element).toUpperCase();
+                return nodp.make_string_from_children(element).toUpperCase();
             },
             'to-lower-case': function(element) {
-                return nodp.make_string_from_childrens(element).toLowerCase();
+                return nodp.make_string_from_children(element).toLowerCase();
             },
             'string-index-of': function(element) {
                 return nodp.get_evaluated_argument(element, 0).toString().indexOf(nodp.get_evaluated_argument(element, 1))
@@ -577,7 +570,7 @@ function Nodep(head) {
                 return nodp.get_evaluated_argument(element, 0).toString().replace(nodp.get_evaluated_argument(element, 1), nodp.get_evaluated_argument(element, 2))
             },
             'regular-expression': function(element) {
-                return new RegExp(nodp.make_string_from_childrens(element));
+                return new RegExp(nodp.make_string_from_children(element));
             },
             'string-split': function(element) {
                 return nodp.get_evaluated_argument(element, 0).toString().split(nodp.get_evaluated_argument(element, 1))
@@ -637,12 +630,12 @@ function Nodep(head) {
             nodp.define_node(key, base_functions[key]);
         });
     }
-    var start = async function(head) { //maybe later make nodp a class 
+    this.start = async function(head) { //maybe later make nodp a class 
         //scan        //add basic nodes and attributes required to do something
         addBaseNodes(head);
         addBaseAttributes(head)
 
-        var top_definitions = ['import-extention','import-package' , 'define-attribute', 'define-node'];//
+        var top_definitions = ['import-extension','import-package' , 'define-attribute', 'define-node'];//
         try {
             // before executing, add all definitions to the table
             for (var i = 0; i < top_definitions.length; i++) {
@@ -662,6 +655,6 @@ function Nodep(head) {
         }
     }
 
-    start(head)
+    nodp.start(head)
 
 }
