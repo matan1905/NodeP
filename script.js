@@ -344,10 +344,10 @@ function Nodep(head) {
                 throw nodp.make_string_from_children(element);
             },
             'get-node-definition': function(element) {
-                return nodes_table(nodp.make_string_from_children(element))
+                return nodes_table[nodp.make_string_from_children(element).toUpperCase()]
             },
             'get-attribute-definition': function(element) {
-                return attributes_table[nodp.make_string_from_children(element)];
+                return attributes_table[nodp.make_string_from_children(element).toUpperCase()];
             },
             'identity': function(element) {
                 return nodp.get_unevaluated_argument(element, 0);
