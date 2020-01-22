@@ -10,7 +10,7 @@ Highly inspired by Lisp's "code as data type", which means you can manipulate th
 
 ## Getting Started
 
-For information about NodeP, it's syntax,nodes and attributes, checkout [The wiki](https://github.com/matan1905/NodeP/wiki)
+For information about NodeP, it's syntax,nodes and attributes, checkout [The wiki](https://github.com/matan1905/NodeP/wiki) and it's [Documentation](https://github.com/matan1905/NodeP/wiki/Documentation)
 
 You can also checkout the [examples page](https://github.com/matan1905/NodeP/tree/master/examples) 
 ### Playground
