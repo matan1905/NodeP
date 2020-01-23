@@ -38,9 +38,7 @@ function Nodep(head) {
                 if (attribute_table_object) {
                     if (typeof attribute_table_object === "function") attribute_table_object(element);
                     else nodp.apply_evaluation(attribute_table_object.cloneNode(true));
-                } else {
-                    throw ("Attempt to evaluate undefined attribute: " + attribute.name);
-                }
+                } 
             }
         //   pop_scope();
     }
